@@ -2,7 +2,6 @@ package com.product.star.homework;
 
 import org.hibernate.SessionFactory;
 
-import java.util.Collections;
 import java.util.List;
 
 public class ContactDao {
@@ -14,29 +13,58 @@ public class ContactDao {
     }
 
     public List<Contact> getAllContacts() {
-        // TODO Implement me!
-        return Collections.emptyList();
+        try (var session = sessionFactory.openSession()) {
+            return session.createQuery("from Contact", Contact.class).getResultList();
+        }
     }
 
     public Contact getContact(long contactId) {
-        // TODO Implement me!
-        return null;
+        try (var session = sessionFactory.openSession()) {
+            return session.get(Contact.class, contactId);
+        }
     }
 
     public long addContact(Contact contact) {
-        // TODO Implement me!
-        return -1;
+        try (var session = sessionFactory.openSession()) {
+            var transaction = session.beginTransaction();
+            var contactId = (Long) session.save(contact);
+            transaction.commit();
+            return contactId;
+        }
     }
 
-    public void updatePhoneNumber(long contactId, String phoneNumber) {
-        // TODO Implement me!
+    public void updatePhone(long contactId, String phoneNumber) {
+        try (var session = sessionFactory.openSession()) {
+            var transaction = session.beginTransaction();
+            var contact = session.get(Contact.class, contactId);
+            if (contact != null) {
+                contact.setPhone(phoneNumber);
+                session.update(contact);
+            }
+            transaction.commit();
+        }
     }
 
     public void updateEmail(long contactId, String email) {
-        // TODO Implement me!
+        try (var session = sessionFactory.openSession()) {
+            var transaction = session.beginTransaction();
+            var contact = session.get(Contact.class, contactId);
+            if (contact != null) {
+                contact.setEmail(email);
+                session.update(contact);
+            }
+            transaction.commit();
+        }
     }
 
     public void deleteContact(long contactId) {
-        // TODO Implement me!
+        try (var session = sessionFactory.openSession()) {
+            var transaction = session.beginTransaction();
+            var contact = session.get(Contact.class, contactId);
+            if (contact != null) {
+                session.delete(contact);
+            }
+            transaction.commit();
+        }
     }
 }
